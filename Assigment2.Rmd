@@ -38,7 +38,7 @@ predict(lm.fit, data.frame(horsepower=c(98)), interval = "prediction")
 
 ## (b)
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 attach(Auto) # for plot
 plot(horsepower, mpg)
 abline(lm.fit)
@@ -47,7 +47,7 @@ abline(lm.fit,lwd =3, col ="red")
 
 ## (c)
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 plot(lm.fit)
 ```
 
@@ -78,7 +78,7 @@ iii. Regression coefficient of year: 0.75 The lower the "year", the higher the "
 
 ## (d)
 
-```{r  echo=FALSE}
+```{r,  echo=FALSE}
 plot(lm.fit)
 plot(predict(lm.fit), rstudent(lm.fit))
 ```
@@ -94,10 +94,11 @@ Auto2 = Auto[,1:8]
 lm2.fit = lm(mpg~.*., data = Auto2)
 summary(lm2.fit)
 ```
+From the p-values, e.g. acceleration:origin is statistically signifcant
 
 ## (f)
 
-```{r  echo=FALSE}
+```{r,  echo=FALSE}
 attach(Auto)
 plot(log(horsepower), mpg)
 plot(sqrt(horsepower), mpg)
@@ -115,7 +116,21 @@ summary(lm.fit)
 ```
 
 ## (b)
+Price  
+- 
+urbanYes  
+- 
+USYes
+- 
+
 ## (c)
+
+Sales = 13.04 + -0.05 Price + -0.02 UrbanYes + 1.20 USYes  
+
+## (d)
+
+Price and USYes
+
 ## (e)
 
 ```{r}
@@ -142,7 +157,7 @@ confint(lm2.fit)
 
 ## (h)
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 plot(lm2.fit)
 ```
 
@@ -180,7 +195,7 @@ length of vector y  = 100 ; beta0 = -1 ; beta1 = 0.5
 
 ## (d)
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 plot(x,y)
 abline(lm.fit)
 ```
