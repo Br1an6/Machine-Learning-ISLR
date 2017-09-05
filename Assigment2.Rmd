@@ -1,0 +1,45 @@
+---
+title: "Assignment2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+LoadLibraries = function (){
+  library(ISLR)
+  library(MASS)
+  print("The libraries have been loaded .")
+}
+
+LoadLibraries()
+```
+
+## R Markdown
+Q8.
+(a)
+i. Yes
+ii. strong relationship # not sure
+iii. Negative
+```{r}
+lm.fit =lm(mpg~horsepower ,data=Auto) # v1: mpg v4: horsepower
+attach(Auto) # for plot
+summary(lm.fit)
+```
+
+## Including Plots
+(b)
+```{r echo=FALSE}
+plot(horsepower, mpg)
+abline(lm.fit)
+abline (lm.fit ,lwd =3, col ="red")
+```
+(c)
+```{r echo=FALSE}
+plot(lm.fit)
+```
+
+
+Q9.
+
+Q10.
+
+Q13.
