@@ -8,7 +8,7 @@ LoadLibraries()
 lm.fit =lm(Sales~Price + Urban + US, data = Carseats)
 attach(Carseats) # for plot
 lm.fit =lm(Sales~Price + Urban + US)
-summary(lm)
+summary(lm.fit)
 
 #uses the predictors for which there is evidence of association with the outcome
 lm2.fit = lm(Sales~Price + US, data = Carseats)

@@ -1,6 +1,9 @@
 ---
 title: "Assignment2"
-output: html_document
+author: "Yuan-An Liu"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,32 +17,195 @@ LoadLibraries()
 ```
 
 ## R Markdown
+```
 Q8.
 (a)
 i. Yes
 ii. strong relationship # not sure
 iii. Negative
+```
 ```{r}
 lm.fit =lm(mpg~horsepower ,data=Auto) # v1: mpg v4: horsepower
 attach(Auto) # for plot
 summary(lm.fit)
 ```
-
-## Including Plots
+```
 (b)
+```
 ```{r echo=FALSE}
 plot(horsepower, mpg)
 abline(lm.fit)
 abline (lm.fit ,lwd =3, col ="red")
 ```
+```
 (c)
+```
 ```{r echo=FALSE}
 plot(lm.fit)
 ```
-
-
+```
 Q9.
-
+```
+```
+(a)
+```
+```{r}
+pairs(Auto) # scatterplot matrix
+```
+```
+(b)
+```
+```{r}
+cor(Auto[,1:8]) # correlations between the variables without names
+```
+```
+(c)
+```
+```{r}
+lm.fit =lm(mpg~.-name,data=Auto)
+attach(Auto) # for plot
+summary(lm.fit)
+```
+```
+(d)
+```
+```{r  echo=FALSE}
+plot(lm.fit)
+```
+```
+(e)
+```
+```{r}
+Auto2 = Auto[,1:8]
+lm2.fit = lm(mpg~.*., data = Auto2)
+summary(lm2.fit)
+#prediction missing
+```
+```
+(f)
+```
+```{r  echo=FALSE}
+plot(log(Auto$horsepower), Auto$mpg)
+plot(sqrt(Auto$horsepower), Auto$mpg)
+plot((Auto$horsepower)^2, Auto$mpg)
+```
+```
+It is a better fit than the original one.
+```
+```
 Q10.
-
+```
+```
+(a)
+```
+```{r}
+lm.fit =lm(Sales~Price + Urban + US, data = Carseats)
+attach(Carseats) # for plot
+summary(lm.fit)
+```
+```
+(b)
+(c)
+(e)
+```
+```{r}
+#uses the predictors for which there is evidence of association with the outcome
+lm2.fit = lm(Sales~Price + US, data = Carseats)
+summary(lm2.fit)
+```
+```
+(f)
+```
+```{r}
+summary(lm.fit)
+```
+```
+Comparing to lm2.fit, the two models are similarly fit.
+```
+```
+(g)
+```
+```{r}
+print("Confidence Intervals:")
+confint(lm2.fit)
+```
+```
+(h)
+```
+```{r echo=FALSE}
+plot(lm2.fit)
+```
+```
+#missing
+```
+```
 Q13.
+```
+```{r}
+set.seed(1)
+```
+```
+set.seed(1) prior to starting part (a): according to the question
+```
+```
+(a)
+```
+```{r}
+x = rnorm(100, 0, 1)
+```
+```
+(b)
+```
+```{r}
+eps = rnorm(100, 0, 0.25)
+```
+```
+(c)
+```
+```{r}
+y = -1 + 0.5*x + eps
+length(y)
+summary(y)
+```
+```
+length of vector y  = 100 ; beta0 = -1 ; beta1 = 0.5
+```
+```
+(d)
+```
+```{r echo=FALSE}
+# start plotting
+plot(x,y)
+abline(lm.fit)
+```
+```
+Linear relationship
+```
+```
+(e)
+```
+```{r}
+lm.fit = lm(y~x)
+summary(lm.fit)
+```
+```
+beta0 and 1 are similar to the original values
+```
+```
+(f)
+```
+```{r}
+plot(x,y)
+abline(lm.fit)
+abline (lm.fit ,lwd =3, col ="red")
+```
+```
+(g)
+```
+```{r}
+lm2.fit = lm(y~poly(x, 2))
+summary(lm2.fit)
+```
+```
+Regression coefficient of the model is insignificant
+```
