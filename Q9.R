@@ -21,6 +21,6 @@ Auto2 = Auto[,1:8]
 lm2.fit = lm(mpg~.*., data = Auto2)
 summary(lm2.fit)
 
-plot(log(Auto$horsepower), Auto$mpg)
-plot(sqrt(Auto$horsepower), Auto$mpg)
-plot((Auto$horsepower)^2, Auto$mpg)
+plot(log(horsepower), mpg)
+plot(sqrt(horsepower), mpg)
+plot((horsepower)^2, mpg)

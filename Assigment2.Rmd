@@ -1,11 +1,10 @@
 ---
-title: "Assignment2"
-author: "Yuan-An Liu"
+title: "Homework 2"
+author: "Yuan-An Liu A20375099"
 output:
   pdf_document: default
   html_document: default
 ---
-
 ```{r setup, include=FALSE}
 LoadLibraries = function (){
   library(ISLR)
@@ -15,8 +14,6 @@ LoadLibraries = function (){
 
 LoadLibraries()
 ```
-
-## R Markdown
 ```
 Q8.
 (a)
@@ -25,17 +22,28 @@ ii. strong relationship # not sure
 iii. Negative
 ```
 ```{r}
-lm.fit =lm(mpg~horsepower ,data=Auto) # v1: mpg v4: horsepower
-attach(Auto) # for plot
+lm.fit =lm(mpg~horsepower ,data=Auto)
 summary(lm.fit)
+```
+```
+iv.
+```
+```{r}
+# the predicted mpg associated with a horsepower of 98
+predict(lm.fit, data.frame(horsepower=c(98)))
+# the associated 95% confidence interval
+predict(lm.fit, data.frame(horsepower=c(98)), interval = "confidence")
+# the associated 95% prediction interval
+predict(lm.fit, data.frame(horsepower=c(98)), interval = "prediction")
 ```
 ```
 (b)
 ```
 ```{r echo=FALSE}
+attach(Auto) # for plot
 plot(horsepower, mpg)
 abline(lm.fit)
-abline (lm.fit ,lwd =3, col ="red")
+abline(lm.fit,lwd =3, col ="red")
 ```
 ```
 (c)
@@ -63,8 +71,12 @@ cor(Auto[,1:8]) # correlations between the variables without names
 ```
 ```{r}
 lm.fit =lm(mpg~.-name,data=Auto)
-attach(Auto) # for plot
 summary(lm.fit)
+```
+```
+i.  Yes
+ii. displacement, weight, year and origin
+iii. The lower the "year", the higher the "mpg"
 ```
 ```
 (d)
@@ -79,15 +91,15 @@ plot(lm.fit)
 Auto2 = Auto[,1:8]
 lm2.fit = lm(mpg~.*., data = Auto2)
 summary(lm2.fit)
-#prediction missing
 ```
 ```
 (f)
 ```
 ```{r  echo=FALSE}
-plot(log(Auto$horsepower), Auto$mpg)
-plot(sqrt(Auto$horsepower), Auto$mpg)
-plot((Auto$horsepower)^2, Auto$mpg)
+attach(Auto)
+plot(log(horsepower), mpg)
+plot(sqrt(horsepower), mpg)
+plot((horsepower)^2, mpg)
 ```
 ```
 It is a better fit than the original one.
@@ -100,7 +112,6 @@ Q10.
 ```
 ```{r}
 lm.fit =lm(Sales~Price + Urban + US, data = Carseats)
-attach(Carseats) # for plot
 summary(lm.fit)
 ```
 ```
@@ -126,7 +137,7 @@ Comparing to lm2.fit, the two models are similarly fit.
 (g)
 ```
 ```{r}
-print("Confidence Intervals:")
+# Confidence Intervals:
 confint(lm2.fit)
 ```
 ```
@@ -174,7 +185,6 @@ length of vector y  = 100 ; beta0 = -1 ; beta1 = 0.5
 (d)
 ```
 ```{r echo=FALSE}
-# start plotting
 plot(x,y)
 abline(lm.fit)
 ```

@@ -8,7 +8,6 @@ LoadLibraries()
 #Auto=read.table("Auto.data", header =T,na.strings ="?")
 lm.fit =lm(mpg~horsepower ,data=Auto) # v1: mpg v4: horsepower
 attach(Auto) # for plot
-lm.fit =lm(mpg~horsepower)
 summary(lm.fit)
 
 # Confidence Intervals

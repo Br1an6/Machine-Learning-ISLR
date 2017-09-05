@@ -6,7 +6,6 @@ LoadLibraries = function (){
 
 LoadLibraries()
 lm.fit =lm(Sales~Price + Urban + US, data = Carseats)
-attach(Carseats) # for plot
 lm.fit =lm(Sales~Price + Urban + US)
 summary(lm.fit)
 
