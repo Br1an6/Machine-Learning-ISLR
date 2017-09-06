@@ -4,7 +4,6 @@ author: "Jiao Qu A20386614 Yuan-An Liu A20375099 Zhenyu Zhang A20287371 "
 output:
   pdf_document: default
   html_document: default
-  word_document: default
 ---
 ```{r setup, include=FALSE}
 LoadLibraries = function (){
@@ -17,14 +16,14 @@ LoadLibraries()
 ```
 # Q8.
 ## (a)
-i. Yes, p-value of the F-statistic is close to 0.  
-ii. strong relationship.The mean of mpg is 23.45. Because of the RSE is 4.906 , it shows the percentage error of close to 20%. So A huge percentage of the variance in mpg is explained by horsepower.  
-iii. The relationship between mpg and horsepower is "Negative"  
 ```{r}
 summary(Auto)
 lm.fit =lm(mpg~horsepower ,data=Auto)
 summary(lm.fit)
 ```
+i. Yes, p-value of the F-statistic is close to 0.  
+ii. strong relationship.The mean of mpg is 23.45. Because of the RSE is 4.906 , it shows the percentage error of close to 20%. So A huge percentage of the variance in mpg is explained by horsepower.  
+iii. The relationship between mpg and horsepower is "Negative"  
 
 iv.  
 ```{r}
@@ -38,7 +37,7 @@ predict(lm.fit, data.frame(horsepower=c(98)), interval = "prediction")
 
 ## (b)
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 attach(Auto) # for plot
 plot(horsepower, mpg)
 abline(lm.fit)
@@ -98,7 +97,7 @@ From the p-values, e.g. acceleration:origin is statistically signifcant
 
 ## (f)
 
-```{r,  echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 attach(Auto)
 plot(log(horsepower), mpg)
 plot(sqrt(horsepower), mpg)
@@ -223,7 +222,7 @@ beta0 and 1 are similar to the original values
 ```{r}
 plot(x,y)
 abline(lm.fit)
-abline (lm.fit ,lwd =3, col ="red")
+abline (lm.fit, lwd =3, col ="red")
 ```
 
 ## (g)
@@ -234,3 +233,37 @@ summary(lm2.fit)
 ```
 
 Regression coefficient of the model is insignificant  
+
+## (h)
+```{r}
+set.seed(1)
+eps = rnorm(100, 0, 0.1)
+x = rnorm(100)
+y = -1 + 0.5*x + eps
+plot(x, y)
+lm1.fit = lm(y~x)
+summary(lm1.fit)
+abline(lm1.fit, lwd =3, col ="red")
+```
+RSE dencreases  
+
+## (i)
+```{r}
+set.seed(1)
+eps = rnorm(100, 0, 0.5)
+x = rnorm(100)
+y = -1 + 0.5*x + eps
+plot(x, y)
+lm2.fit = lm(y~x)
+summary(lm2.fit)
+abline(lm2.fit, lwd =3, col ="red")
+```
+RSE increases  
+
+## (j)
+```{r}
+confint(lm.fit)
+confint(lm1.fit)
+confint(lm2.fit)
+```
+With different level of noises, Intervals are still around 0.5.  
