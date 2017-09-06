@@ -1,6 +1,6 @@
 ---
 title: "Homework 2"
-author: "Yuan-An Liu A20375099"
+author: "Jiao Qu A20386614 Yuan-An Liu A20375099 Zhenyu Zhang A20287371 "
 output:
   pdf_document: default
   html_document: default
@@ -117,11 +117,13 @@ summary(lm.fit)
 
 ## (b)
 Price  
-- 
+- According to the linear regression, there is a relationship. he higher price, the lower sales.
+
 urbanYes  
-- 
-USYes
-- 
+- According to the linear regression, there isn’t a relationship between the location of the store and the number of sales  
+
+USYes  
+- According to the linear regression, there is a relationship. If the store is in the US, the sales will increase.  
 
 ## (c)
 
@@ -160,6 +162,11 @@ confint(lm2.fit)
 ```{r, echo=FALSE}
 plot(lm2.fit)
 ```
+As the rstudents values, there is no outliers are suggeste.  
+```{r, echo=FALSE}
+plot(predict(lm2.fit), rstudent(lm2.fit))
+```
+The graph shows that there are a few high leverage points.  
 
 # Q13.
 
