@@ -1,0 +1,274 @@
+---
+title: "Homework 2"
+author: "Jiao Qu A20386614, Yuan-An Liu A20375099, Zhenyu Zhang A20287371 "
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r setup, include=FALSE}
+LoadLibraries = function (){
+  # load libraries
+  library(ISLR)
+  library(MASS)
+  print("The libraries have been loaded .")
+}
+
+LoadLibraries()
+```
+# Q8.
+## (a)
+```{r}
+summary(Auto)
+lm.fit =lm(mpg~horsepower ,data=Auto)
+summary(lm.fit)
+```
+i. Yes, p-value of the F-statistic is close to 0.  
+ii. Strong relationship.The mean of mpg is 23.45. Because of the RSE is 4.906 , it shows the percentage error of close to 20%. So A huge percentage of the variance in mpg is explained by horsepower.  
+iii. The relationship between mpg and horsepower is "Negative"  
+
+iv.  
+```{r}
+# the predicted mpg associated with a horsepower of 98
+predict(lm.fit, data.frame(horsepower=c(98)))
+# the associated 95% confidence interval
+predict(lm.fit, data.frame(horsepower=c(98)), interval = "confidence")
+# the associated 95% prediction interval
+predict(lm.fit, data.frame(horsepower=c(98)), interval = "prediction")
+```
+
+## (b)
+
+```{r, echo=FALSE, message=FALSE}
+attach(Auto) # for plot
+plot(horsepower, mpg)
+abline(lm.fit)
+abline(lm.fit,lwd =3, col ="red")
+```
+
+## (c)
+
+```{r, echo=FALSE}
+plot(lm.fit)
+```
+
+# Q9.
+## (a)
+
+```{r}
+pairs(Auto) # scatterplot matrix
+```
+
+## (b)
+
+```{r}
+cor(Auto[,1:8]) # correlations between the variables without names
+```
+
+## (c)
+
+```{r}
+lm.fit =lm(mpg~.-name,data=Auto)
+summary(lm.fit)
+```
+
+i.  Yes  
+ii. displacement, weight, year and origin  
+iii. Regression coefficient of year: 0.75 The lower the "year" (older), the higher the "mpg"  
+
+## (d)
+
+```{r,  echo=FALSE}
+plot(lm.fit)
+plot(predict(lm.fit), rstudent(lm.fit))
+```
+
+- The fit seems not linear. There is a curve.  
+- There are some values in "rstudent" > 3   
+
+## (e)
+
+```{r}
+Auto2 = Auto[,1:8]
+lm2.fit = lm(mpg~.*., data = Auto2)
+summary(lm2.fit)
+```
+
+From the p-values, e.g. acceleration:origin is statistically signifcant
+
+## (f)
+
+```{r, echo=FALSE, message=FALSE}
+attach(Auto)
+plot(log(horsepower), mpg)
+plot(sqrt(horsepower), mpg)
+plot((horsepower)^2, mpg)
+```
+
+It shows that "log" is a better fit than the original one.  
+
+# Q10.
+## (a)
+
+```{r}
+lm.fit =lm(Sales~Price + Urban + US, data = Carseats)
+summary(lm.fit)
+```
+
+## (b)
+#####Price  
+- According to the linear regression, there is a relationship. he higher price, the lower sales.  
+
+#####urbanYes  
+- According to the linear regression, there isn’t a relationship between the location of the store and the number of sales  
+
+#####USYes  
+- According to the linear regression, there is a relationship. If the store is in the US, the sales will increase.  
+
+## (c)
+
+Sales = 13.04 + -0.05 Price + -0.02 UrbanYes + 1.20 USYes  
+
+## (d)
+
+Price and USYes  
+
+## (e)
+
+```{r}
+#uses the predictors for which there is evidence of association with the outcome
+lm2.fit = lm(Sales~Price + US, data = Carseats)
+summary(lm2.fit)
+```
+
+## (f)
+
+```{r}
+summary(lm.fit)
+```
+
+Comparing to lm2.fit, the two models are similarly fit.  
+
+## (g)
+
+```{r}
+# Confidence Intervals:
+confint(lm2.fit)
+```
+
+## (h)
+
+```{r, echo=FALSE}
+plot(lm2.fit)
+```
+
+As the rstudents values, there is no outliers are suggested.  
+
+```{r, echo=FALSE}
+plot(predict(lm2.fit), rstudent(lm2.fit))
+```
+
+The graph shows that there are a few high leverage points.  
+
+# Q13.
+
+```{r}
+set.seed(1)
+```
+
+set.seed(1) prior to starting part (a): according to the question  
+
+## (a)
+
+```{r}
+x = rnorm(100, 0, 1)
+```
+
+## (b)
+
+```{r}
+eps = rnorm(100, 0, 0.25)
+```
+
+## (c)
+
+```{r}
+y = -1 + 0.5*x + eps
+length(y)
+summary(y)
+```
+
+length of vector y  = 100 ; beta0 = -1 ; beta1 = 0.5  
+
+## (d)
+
+```{r, echo=FALSE}
+plot(x,y)
+abline(lm.fit)
+```
+
+Linear relationship  
+
+## (e)
+
+```{r}
+lm.fit = lm(y~x)
+summary(lm.fit)
+```
+
+beta0 and 1 are similar to the original values.  
+
+## (f)
+
+```{r}
+plot(x,y)
+abline(lm.fit)
+abline (lm.fit, lwd =3, col ="red")
+```
+
+## (g)
+
+```{r}
+lm2.fit = lm(y~poly(x, 2))
+summary(lm2.fit)
+```
+
+Regression coefficient of the model is insignificant.  
+
+## (h)
+
+```{r}
+set.seed(1)
+eps = rnorm(100, 0, 0.1) # less noise
+x = rnorm(100)
+y = -1 + 0.5*x + eps
+plot(x, y)
+lm1.fit = lm(y~x)
+summary(lm1.fit)
+abline(lm1.fit, lwd =3, col ="red")
+```
+
+RSE dencreases  
+
+## (i)
+```{r}
+set.seed(1)
+eps = rnorm(100, 0, 0.5)  # more noise
+x = rnorm(100)
+y = -1 + 0.5*x + eps
+plot(x, y)
+lm2.fit = lm(y~x)
+summary(lm2.fit)
+abline(lm2.fit, lwd =3, col ="red")
+```
+
+RSE increases  
+
+## (j)
+
+```{r}
+confint(lm.fit)
+confint(lm1.fit)
+confint(lm2.fit)
+```
+
+With different level of noises, Intervals are still around 0.5.  

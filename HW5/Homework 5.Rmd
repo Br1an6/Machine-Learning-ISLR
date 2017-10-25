@@ -1,0 +1,76 @@
+---
+title: "Homework 5"
+author: "Jiao Qu A20386614, Yuan-An Liu A20375099, Zhenyu Zhang A20287371"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+LoadLibraries = function (){
+  # load libraries
+  library(ISLR)
+  library(leaps)
+  print("The libraries have been loaded .")
+}
+
+LoadLibraries()
+```
+
+# 1.
+
+```{r}
+regfit.full = regsubsets(mpg~.-name, data = Auto)
+regfit.summary = summary(regfit.full)
+# a. the best adjusted R2
+which.max(regfit.summary$adjr2)
+```
+
+The best subset: wicylinders, displacement, horsepower, weight, year, origin
+
+## (a)
+```{r}
+regfit.summary$adjr2[6]
+```
+
+The best adjusted R2 is at 6th: 0.8183822
+
+## (b)
+```{r}
+# b. coefficients
+coefficients(regfit.full, id = 6)
+```
+
+## (c)
+```{r}
+# c. Plot of the adjusted R2 as a function of number of variables
+plot(regfit.summary$adjr2, xlab = "Number of Variables", ylab = "Adjusted R2", pch = 20, 
+     type = "l")
+points(6, regfit.summary$adjr2[6], pch = 4, col = "red", lwd = 7)
+```
+
+#2.
+```{r}
+regfit.fwd=regsubsets(mpg~.-name, data = Auto, method ="forward")
+summary(regfit.fwd)
+regfitFWD.summary = summary(regfit.fwd)
+which.max(regfitFWD.summary$adjr2)
+regfitFWD.summary$adjr2[6]
+```
+
+## (d)
+
+It is the same.
+
+## (e)
+
+It is the same.
+
+#3
+```{r}
+regfit.bwd=regsubsets(mpg~.-name, data = Auto, method ="backward")
+regfitBWD.summary = summary(regfit.bwd)
+which.max(regfitBWD.summary$adjr2)
+regfitBWD.summary$adjr2[6]
+```
+
+It is the same. Both result and Subset.
