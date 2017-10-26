@@ -19,58 +19,209 @@ LoadLibraries()
 # 1.
 
 ```{r}
+Auto$origin <- factor(Auto$origin)
 regfit.full = regsubsets(mpg~.-name, data = Auto)
+summary(regfit.full)
 regfit.summary = summary(regfit.full)
 # a. the best adjusted R2
 which.max(regfit.summary$adjr2)
 ```
 
-The best subset: wicylinders, displacement, horsepower, weight, year, origin
+The best subset: cylinders displacement horsepower weight year origin2 origin3
 
 ## (a)
 ```{r}
-regfit.summary$adjr2[6]
+regfit.summary$adjr2[7]
 ```
 
-The best adjusted R2 is at 6th: 0.8183822
+The best adjusted R2 is at 7th: 0.8206916
 
 ## (b)
 ```{r}
 # b. coefficients
-coefficients(regfit.full, id = 6)
+coefficients(regfit.full, id = 7)
 ```
 
 ## (c)
 ```{r}
 # c. Plot of the adjusted R2 as a function of number of variables
-plot(regfit.summary$adjr2, xlab = "Number of Variables", ylab = "Adjusted R2", pch = 20, 
-     type = "l")
-points(6, regfit.summary$adjr2[6], pch = 4, col = "red", lwd = 7)
+plot(regfit.summary$adjr2, xlab = "Number of Variables", ylab = "Adjusted R2", pch = 20, type = "l")
+points(7, regfit.summary$adjr2[7], pch = 4, col = "red", lwd = 7)
 ```
 
 #2.
+
 ```{r}
 regfit.fwd=regsubsets(mpg~.-name, data = Auto, method ="forward")
 summary(regfit.fwd)
 regfitFWD.summary = summary(regfit.fwd)
 which.max(regfitFWD.summary$adjr2)
-regfitFWD.summary$adjr2[6]
+```
+
+The best subset: cylinders displacement horsepower weight year origin2 origin3
+
+## (a)
+```{r}
+regfitFWD.summary$adjr2[7]
+```
+
+The best adjusted R2 is at 7th: 0.8206916
+
+## (b)
+```{r}
+# b. coefficients
+coefficients(regfit.fwd, id = 7)
+```
+
+## (c)
+```{r}
+# c. Plot of the adjusted R2 as a function of number of variables
+plot(regfitFWD.summary$adjr2, xlab = "Number of Variables", ylab = "Adjusted R2", pch = 20, type = "l")
+points(7, regfitFWD.summary$adjr2[7], pch = 4, col = "red", lwd = 7)
 ```
 
 ## (d)
 
-It is the same.
+It is the same as the best subset.
 
 ## (e)
 
-It is the same.
+It is the same subset. The same K.
 
 #3
+
 ```{r}
 regfit.bwd=regsubsets(mpg~.-name, data = Auto, method ="backward")
+summary(regfit.bwd)
 regfitBWD.summary = summary(regfit.bwd)
 which.max(regfitBWD.summary$adjr2)
-regfitBWD.summary$adjr2[6]
 ```
 
-It is the same. Both result and Subset.
+The best subset: cylinders displacement horsepower weight year origin2 origin3
+
+## (a)
+```{r}
+regfitBWD.summary$adjr2[7]
+```
+
+The best adjusted R2 is at 7th: 0.8206916
+
+## (b)
+```{r}
+# b. coefficients
+coefficients(regfit.bwd, id = 7)
+```
+
+## (c)
+```{r}
+# c. Plot of the adjusted R2 as a function of number of variables
+plot(regfitBWD.summary$adjr2, xlab = "Number of Variables", ylab = "Adjusted R2", pch = 20, type = "l")
+points(7, regfitBWD.summary$adjr2[7], pch = 4, col = "red", lwd = 7)
+```
+
+## (d)
+
+It is the same as the best subset.
+
+## (e)
+
+It is the same subset. The same K.
+
+#4
+
+## (a)
+```{r cars}
+set.seed(1)
+train=sample(c(TRUE,FALSE),nrow(Auto),replace=TRUE)
+test=(!train)
+Auto$origin=factor(Auto$origin)
+regfit.best=regsubsets(mpg~.-name,data=Auto[train,],nvmax=7)
+test.mat=model.matrix(mpg~.-name,data=Auto[test,])
+val.errors=rep(NA,7)
+ for(i in 1:7){
+     coefi=coef(regfit.best,id=i)
+     pred=test.mat[,names(coefi)]%*%coefi
+     val.errors[i]=mean((Auto$mpg[test]-pred)^2) }
+val.errors
+```
+
+The best validation error is 14.15268.
+
+## (b)
+```{r}
+# Plot the validation error as a function of k, the number of features.
+plot(val.errors,xlab = "Number of predictors",ylab = "valdation error",pch=20,type = "b")
+```
+
+## (c)
+```{r}
+# Show the coefficients.
+which.min(val.errors)
+coef(regfit.best,7)
+```
+
+## (d)
+
+Is this result different than the one you generated in question 1 for best subsets?
+This result is same as the one that generated in Q1.
+ 
+## (e)
+```{r}
+regfit.best=regsubsets(mpg~.-name,data=Auto,nvmax=7)
+coef(regfit.best,7)
+```
+
+
+#5
+
+## (a)
+```{r}
+k=3
+set.seed(1)
+Auto$origin=factor(Auto$origin)
+folds=sample(1:k,nrow(Auto),replace = TRUE)
+cv.errors=matrix(NA,k,7,dimnames = list(NULL, paste(1:7)))
+predict.regsubsets = function(object, newdata, id, ...) {
+    form = as.formula(object$call[[2]])
+    mat = model.matrix(form, newdata)
+    coefi = coef(object, id = id)
+    xvars=names(coefi)
+    mat[, names(coefi)] %*% coefi
+}
+for(j in 1:k){
+  best.fit=regsubsets(mpg~.-name,data = Auto[folds!=j,],nvmax = 7)
+  for (i in 1:7) {
+    pred=predict(best.fit,Auto[folds==j,],id=i)
+    cv.errors[j,i]=mean((Auto$mpg[folds==j]-pred))
+  }
+}
+mean.cv.errors=apply(cv.errors,2,mean)
+par(mfrow=c(1,1))
+mean.cv.errors
+```
+
+The best validation error is -0.034964546.
+
+## (b)
+```{r}
+# Plot the validation error as a function of k, the number of features.
+par(mfrow=c(1,1))
+plot(mean.cv.errors,xlab="Number of features",type='b')
+```
+
+## (c)
+```{r}
+# Show the coefficients.
+coef(best.fit,6)
+```
+
+## (d)
+Is this result different than the one you generated in question 1 for best subsets?
+This result is different from the one that generated in Q1. The result shows the best model is the one that only contains 6 variables.
+
+
+## (e)
+```{r}
+reg.best=regsubsets(mpg~.-name,data=Auto,nvmax=7)
+coef(reg.best,6)
+```
