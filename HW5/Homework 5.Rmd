@@ -20,7 +20,7 @@ LoadLibraries()
 
 ```{r}
 Auto$origin <- factor(Auto$origin)
-regfit.full = regsubsets(mpg~.-name, data = Auto)
+regfit.full = regsubsets(mpg~.-name, data = Auto, nvmax=7)
 summary(regfit.full)
 regfit.summary = summary(regfit.full)
 # a. the best adjusted R2
@@ -52,7 +52,7 @@ points(7, regfit.summary$adjr2[7], pch = 4, col = "red", lwd = 7)
 #2.
 
 ```{r}
-regfit.fwd=regsubsets(mpg~.-name, data = Auto, method ="forward")
+regfit.fwd=regsubsets(mpg~.-name, data = Auto, nvmax=7, method ="forward")
 summary(regfit.fwd)
 regfitFWD.summary = summary(regfit.fwd)
 which.max(regfitFWD.summary$adjr2)
@@ -91,7 +91,7 @@ It is the same subset. The same K.
 #3
 
 ```{r}
-regfit.bwd=regsubsets(mpg~.-name, data = Auto, method ="backward")
+regfit.bwd=regsubsets(mpg~.-name, data = Auto, nvmax=7, method ="backward")
 summary(regfit.bwd)
 regfitBWD.summary = summary(regfit.bwd)
 which.max(regfitBWD.summary$adjr2)
@@ -163,7 +163,7 @@ coef(regfit.best,7)
 ## (d)
 
 Is this result different than the one you generated in question 1 for best subsets?
-This result is same as the one that generated in Q1.
+This result is not all the same as the one that generated in Q1. They have the same features. However, not the same coefficients.
  
 ## (e)
 ```{r}
@@ -217,7 +217,7 @@ coef(best.fit,6)
 
 ## (d)
 Is this result different than the one you generated in question 1 for best subsets?
-This result is different from the one that generated in Q1. The result shows the best model is the one that only contains 6 variables.
+This result is different from the one that generated in Q1. They are not the same. Neither features nor coefficients.
 
 
 ## (e)
