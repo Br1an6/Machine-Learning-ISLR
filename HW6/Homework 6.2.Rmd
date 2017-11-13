@@ -1,0 +1,332 @@
+---
+title: "Homework 6"
+author: "Jiao Qu A20386614, Yuan-An Liu A20375099, Zhenyu Zhang A20287371"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+LoadLibraries = function (){
+  # load libraries
+  library(ISLR)
+  library(glmnet)
+  library(pls)
+  library(ggfortify)
+  library(cluster)
+  print("The libraries have been loaded .")
+}
+
+LoadLibraries()
+```
+
+
+# 1.
+
+## a.
+```{r}
+k=3
+set.seed(1)
+Auto$origin=factor(Auto$origin)
+folds=sample(1:k,nrow(Auto),replace = TRUE)
+grid=c(10^seq(10,-10,length=200),0,100)
+cv.errors=matrix(NA,k,length(grid))
+for(j in 1:k){
+  y = Auto$mpg
+  y.train = y[folds != j]
+  x = model.matrix(mpg~.-name,data=Auto)[,-1]
+  x.train = x[folds != j, ]
+  ridge.mod=glmnet(x.train,y.train,alpha=0,lambda=grid)
+  c = 1
+  for(i in grid){
+    pred=predict(ridge.mod,s = i, newx = x[folds==j,])
+    cv.errors[j,c]=mean((y[folds==j]-pred)^2)
+    c = c + 1
+  }
+}
+
+MSE = colMeans(cv.errors)
+plot(x = log(grid), y = MSE)
+```
+
+## b.
+
+```{r}
+grid[which(MSE == min(MSE))]
+MSE[which(MSE == min(MSE))]
+```
+
+#c. What is the MSE when lamba is 0?
+```{r}
+MSE[which(grid==0)]
+```
+
+
+#d. What is the MSE when lambda is 100?
+```{r}
+MSE[which(grid==100)]
+```
+
+#e. What are the coefficients when lamba is 0, 100, and optimal?
+#(1).lamda is optimal
+```{r}
+optimal=grid[which(MSE == min(MSE))]
+zero=(grid==0)
+out=glmnet(x,y,alpha=0)
+predict(out,type="coefficients",s=optimal)[1:9,]
+
+```
+#(2).lambda = 0
+```{r}
+out=glmnet(x,y,alpha=0)
+predict(out,type="coefficients",s=0)[1:9,]
+```
+#(3).lambda = 100
+```{r}
+out=glmnet(x,y,alpha=0)
+predict(out,type="coefficients",s=100)[1:9,]
+```
+
+#2. Use lasso regression to find a solution to predicting mpg as a function of all features except forname. Remove ???name??? from the data set and treat origin as a categorical variable
+
+## a.
+```{r}
+k=3
+set.seed(1)
+Auto$origin=factor(Auto$origin)
+folds=sample(1:k,nrow(Auto),replace = TRUE)
+lam=c(10^seq(10,-10,length=200),0,100)
+cv.errors=matrix(NA,k,length(grid))
+for(j in 1:k){
+  y = Auto$mpg
+  y.train = y[folds != j]
+  x = model.matrix(mpg~.-name,data=Auto)[,-1]
+  x.train = x[folds != j, ]
+  lasso.mod=cv.glmnet(x.train,y.train,alpha=1,lambda=lam)
+  c = 1
+  for(i in grid){
+    pred=predict(ridge.mod,s = i, newx = x[folds==j,])
+    cv.errors[j,c]=mean((y[folds==j]-pred)^2)
+    c = c + 1
+  }
+}
+
+MSE = colMeans(cv.errors)
+plot(x = log(lam), y = MSE)
+```
+
+
+## b.What is the lambda with the minimum MSE (optimal) and what is the MSE?
+
+```{r}
+lam[which(MSE == min(MSE))]
+MSE[which(MSE == min(MSE))]
+```
+
+## c.What is the MSE when lamba is 0?
+```{r}
+MSE[which(lam==0)]
+```
+
+## d.What is the MSE when lambda is 100?
+```{r}
+MSE[which(lam==100)]
+```
+
+## e.What are the coefficients when lamba is 0, 100, and optimal?
+#(1).lamda is optimal
+```{r}
+optimal=lam[which(MSE == min(MSE))]
+out=glmnet(x,y,alpha=1)
+predict(out,type="coefficients",s=optimal)[1:9,]
+```
+#(2).lambda = 0
+```{r}
+out=glmnet(x,y,alpha=1)
+predict(out,type="coefficients",s=0)[1:9,]
+```
+#(3).lambda = 100
+```{r}
+out=glmnet(x,y,alpha=1)
+predict(out,type="coefficients",s=100)[1:9,]
+```
+
+## f.Which generated a lower MSE, ridge or lasso?
+     Lasso regression generated a lower MSE.
+     
+## g.Refer to homework 5. Do the MSEs in either ridge or lasso improve over those in homework 5?
+     Yes. Compared with homework5, both ridge and lasso decrease the MSE. In hw5, the best MSE is 11.75048. Both MSEs (ridge&lasso) are lower than that one. 
+
+#3. 
+
+#a. Plot the MSE as a function of number of principle components.
+```{r}
+k=3
+set.seed(1)
+Auto$origin=factor(Auto$origin)
+folds=sample(1:k,nrow(Auto),replace = TRUE)
+cv.errors=matrix(NA,k,8,dimnames = list(NULL, paste(1:8)))
+for(j in 1:k){
+  pcr.fit=pcr(mpg~.-name,data=Auto[folds!=j,],scale=TRUE,validation="CV")
+  for(i in 1:8){
+    pred=predict(pcr.fit,Auto[folds==j,],ncomp=i)
+    cv.errors[j,i]=mean((Auto$mpg[folds==j]-pred)^2)
+  }
+}
+mean.cv.errors=apply(cv.errors,2,mean)
+plot(mean.cv.errors,type="b")
+```
+
+#b. Plot the variance explained as a function of number of principle components.
+```{r}
+k=3
+set.seed(1)
+Auto$origin=factor(Auto$origin)
+folds=sample(1:k,nrow(Auto),replace = TRUE)
+meanvar=matrix(NA,k,8,dimnames = list(NULL, paste(1:8)))
+for(j in 1:k){
+  pcr.fit=pcr(mpg~.-name,data=Auto[folds!=j,],scale=TRUE,validation="CV")
+  for(i in 1:8){
+    pred=predict(pcr.fit,Auto[folds==j,],ncomp=i)
+    meanvar[j,i]=var(pred)
+  }
+}
+
+plot(apply(meanvar,2,mean),type="b")
+
+
+```
+
+#c. What is the number of principle components in the best (lowest MSE) model?
+```{r}
+mean.cv.errors
+
+```
+The number is 8.
+
+#d. What is its MSE?
+```{r}
+mean.cv.errors
+```
+11.75760 
+
+#e. Is there another number of principle components you might consider? Why?
+    No,because the difference among each component is obvious.
+
+#4
+.
+#a. Plot the MSE as a function of number of random segments.
+```{r}
+k=3
+set.seed(1)
+Auto$origin=factor(Auto$origin)
+folds=sample(1:k,nrow(Auto),replace = TRUE)
+cv.errors=matrix(NA,k,8,dimnames = list(NULL, paste(1:8)))
+for(j in 1:k){
+  pls.fit=plsr(mpg~.-name,data=Auto[folds!=j,],scale=TRUE,validation="CV")
+  for(i in 1:8){
+    pred=predict(pls.fit,Auto[folds==j,],ncomp=i)
+    cv.errors[j,i]=mean((Auto$mpg[folds==j]-pred)^2)
+  }
+}
+mean.cv.errors=apply(cv.errors,2,mean)
+plot(mean.cv.errors,type="b")
+
+```
+
+#b. Plot the variance explained as a function of number of random segments.
+```{r}
+k=3
+set.seed(1)
+Auto$origin=factor(Auto$origin)
+folds=sample(1:k,nrow(Auto),replace = TRUE)
+meanvar=matrix(NA,k,8,dimnames = list(NULL, paste(1:8)))
+for(j in 1:k){
+  pls.fit=plsr(mpg~.-name,data=Auto[folds!=j,],scale=TRUE,validation="CV")
+  for(i in 1:8){
+    pred=predict(pls.fit,Auto[folds==j,],ncomp=i)
+    meanvar[j,i]=var(pred)
+  }
+}
+meanvar=apply(meanvar,2,mean)
+plot(meanvar,type="b")
+```
+
+#c. What is the number of random segments in the best (lowest MSE) model?
+```{r}
+ mean.cv.errors
+```
+The number is 6.
+
+#d. What is its MSE?
+    11.73813
+
+#e. Is there another number of random segments you might consider? Why?
+    The number 7.Because the difference is very close. Although 8 is much closer than 7, the 7's dimension is lower than 8.
+    
+    
+#5.
+```{r}
+Auto$origin=factor(Auto$origin)
+df=Auto[,c(1, 2, 3, 4, 5, 6, 7)]
+pca = function (x, retx = TRUE, center = TRUE, scale. = TRUE, tol = NULL, 
+  ...) 
+{
+  chkDots(...)
+  x=as.matrix(x)
+  x=scale(x, center = center, scale = scale.)
+  cen=attr(x, "scaled:center")
+  sc=attr(x, "scaled:scale")
+  if (any(sc == 0)) 
+    stop("cannot rescale a constant/zero column to unit variance")
+  s=svd(x, nu = 0)
+  s$d=s$d/sqrt(max(1, nrow(x) - 1))
+  if (!is.null(tol)) {
+    rank=sum(s$d > (s$d[1L] * tol))
+    if (rank < ncol(x)) {
+      s$v=s$v[, 1L:rank, drop = FALSE]
+      s$d=s$d[1L:rank]
+    }
+  }
+  dimnames(s$v)=list(colnames(x), paste0("PC", seq_len(ncol(s$v))))
+  r=list(sdev = s$d, rotation = s$v, center = if (is.null(cen)) FALSE else cen, 
+    scale = if (is.null(sc)) FALSE else sc)
+  if (retx) 
+    r$x=x %*% s$v
+  class(r)="prcomp"
+  r
+}
+
+df.pca = pca(df)
+```
+
+#b.
+```{r}
+summary(df.pca)
+```
+
+
+#c.
+```{r}
+autoplot(df.pca,data=df,colour = 'mpg',
+         loadings = TRUE,loadings.colour = 'blue',
+         loadings.label = TRUE, loadings.label.size = 7)
+```
+
+
+#d.
+```{r}
+autoplot(fanny(df.pca$x[,1:2], 3), frame = TRUE)
+```
+cluster 1: factors in this cluster have a negative correlation with mpg.
+e.g:High mpg cars with low horsepower,cylinders,displacement,weight
+
+cluster 2: factor in this cluster basically doesn't influnce the mpg.
+
+cluster 3: factor in this cluster have a positive correlation with mpg.
+e.g:High mpg cars with high acceleration.
+
+
+
+
+
+    
