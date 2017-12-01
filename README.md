@@ -5,4 +5,4 @@ License
 -------
 
 This software is licensed under the MIT license
-© 2017 Cloud Benchmarking  contributors
+© 2017 Machine Learning ISLR contributors
